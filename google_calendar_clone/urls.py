@@ -1,0 +1,5 @@
+"""
+URL config.
+"""
+
+urlpatterns = []

@@ -1,0 +1,35 @@
+version: "3"
+services:
+  db:
+    image: postgres:16.2
+    hostname: db
+    container_name: db
+    volumes:
+      - ./docker-data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: gcc-local
+      POSTGRES_USER: gcc-user
+      POSTGRES_PASSWORD: gcc-password
+  server:
+    hostname: server
+    container_name: server
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.server
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    environment:
+      DJANGO_SECRET_KEY: "django-insecure--ai&5%j@chyd54s25v862_3mcg1vozd6(_&4u87-387josue34"
+      DJANGO_DEBUG: 1
+      DJANGO_ALLOWED_HOSTS: localhost
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: gcc-local
+      DB_USER: gcc-user
+      DB_PASSWORD: gcc-password
+    depends_on:
+      - db
