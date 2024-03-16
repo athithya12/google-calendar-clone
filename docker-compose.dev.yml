@@ -1,5 +1,16 @@
 version: "3"
 services:
+  auth-db:
+    image: postgres:16.2
+    container_name: auth-db
+    volumes:
+      - ./docker-data/auth-db:/var/lib/postgresql/data
+    ports:
+      - 7111:5432
+    environment:
+      POSTGRES_DB: gcc-auth-local
+      POSTGRES_USER: gcc-user
+      POSTGRES_PASSWORD: gcc-password
   db:
     image: postgres:16.2
     hostname: db
@@ -7,11 +18,21 @@ services:
     volumes:
       - ./docker-data/db:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - 6111:5432
     environment:
       POSTGRES_DB: gcc-local
       POSTGRES_USER: gcc-user
       POSTGRES_PASSWORD: gcc-password
+  auth:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:7.0
+    hostname: auth
+    container_name: auth
+    ports:
+      - 3567:3567
+    environment:
+      POSTGRESQL_CONNECTION_URI: "postgresql://gcc-user:gcc-password@auth-db:5432/gcc-auth-local"
+    depends_on:
+      - auth-db
   server:
     hostname: server
     container_name: server
@@ -21,7 +42,7 @@ services:
     volumes:
       - .:/code
     ports:
-      - 8000:8000
+      - 8080:8000
     environment:
       DJANGO_SECRET_KEY: "django-insecure--ai&5%j@chyd54s25v862_3mcg1vozd6(_&4u87-387josue34"
       DJANGO_DEBUG: 1
@@ -31,5 +52,9 @@ services:
       DB_NAME: gcc-local
       DB_USER: gcc-user
       DB_PASSWORD: gcc-password
+      AUTH_URL: http://auth:3567
+      API_URL: http://localhost:8080
+      FRONTEND_URL: http://auth:3000
     depends_on:
       - db
+      - auth

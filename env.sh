@@ -7,7 +7,13 @@ export DJANGO_ALLOWED_HOSTS=localhost
 # Database
 
 export DB_HOST=localhost
-export DB_PORT=5432
+export DB_PORT=6111
 export DB_NAME=google-calendar-clone
 export DB_USER=gcc-user
 export DB_PASSWORD=gcc-password
+
+# Auth
+
+export AUTH_URL=http://auth:3567
+export API_URL=http://localhost:8080
+export FRONTEND_URL=http://auth:3000

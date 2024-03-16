@@ -2,11 +2,22 @@
 Application config.
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+from typing import List
+
+from corsheaders.defaults import default_headers
+from supertokens_python import get_all_cors_headers
+
+from google_calendar_clone.auth import init_auth
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Init auth
+
+init_auth()
 
 
 # Quick-start development settings
@@ -20,11 +31,27 @@ DEBUG = bool(os.environ.get("DJANGO_DEBUG", 1))
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 
+# CORS
+
+CORS_ORIGIN_WHITELIST = [os.environ.get("FRONTEND_URL")]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [os.environ.get("FRONTEND_URL")]
+
+CORS_ALLOW_HEADERS: List[str] = (
+    list(default_headers) + ["Content-Type"] + get_all_cors_headers()
+)
+
+
 # Application definition
 
-INSTALLED_APPS = []
+INSTALLED_APPS = ["corsheaders", "supertokens_python"]
 
-MIDDLEWARE = []
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "supertokens_python.framework.django.django_middleware.middleware",
+]
 
 ROOT_URLCONF = "google_calendar_clone.urls"
 
